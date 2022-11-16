@@ -330,7 +330,7 @@ function App(props) {
             */}
 
           <Contract
-            name="YourContract"
+            name="POC_V3_collection"
             price={price}
             signer={userSigner}
             provider={localProvider}
