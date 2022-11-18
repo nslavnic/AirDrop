@@ -48,6 +48,6 @@
     "generate": "hardhat generate",
     "account": "hardhat account",
     "verify": "hardhat verify",
-    "sign": "hardhat run scripts/signature.js"
+    "sign": "hardhat signature"
   }
 }
