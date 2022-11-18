@@ -26,9 +26,9 @@ function Subgraph(props) {
 
   const EXAMPLE_GRAPHQL = `
   {
-    purposes(first: 25, orderBy: createdAt, orderDirection: desc) {
+    vouchers(first: 25, orderBy: createdAt, orderDirection: desc) {
       id
-      purpose
+      voucher
       createdAt
       sender {
         id
@@ -37,18 +37,18 @@ function Subgraph(props) {
     senders {
       id
       address
-      purposeCount
+      voucherCount
     }
   }
   `;
   const EXAMPLE_GQL = gql(EXAMPLE_GRAPHQL);
   const { loading, data } = useQuery(EXAMPLE_GQL, { pollInterval: 2500 });
 
-  const purposeColumns = [
+  const voucherCoulums = [
     {
-      title: "Purpose",
-      dataIndex: "purpose",
-      key: "purpose",
+      title: "Voucher",
+      dataIndex: "voucher",
+      key: "voucher",
     },
     {
       title: "Sender",
@@ -63,7 +63,7 @@ function Subgraph(props) {
     },
   ];
 
-  const [newPurpose, setNewPurpose] = useState("loading...");
+  const [newVoucher, setNewVoucher] = useState("loading...");
 
   const deployWarning = (
     <div style={{ marginTop: 8, padding: 8 }}>Warning: 🤔 Have you deployed your subgraph yet?</div>
@@ -169,14 +169,14 @@ function Subgraph(props) {
         <div style={{ margin: 32, textAlign: "right" }}>
           <Input
             onChange={e => {
-              setNewPurpose(e.target.value);
+              setNewVoucher(e.target.value);
             }}
           />
           <Button
             onClick={() => {
-              console.log("newPurpose", newPurpose);
+              console.log("newVoucher", newVoucher);
               /* look how you call setPurpose on your contract: */
-              props.tx(props.writeContracts.YourContract.setPurpose(newPurpose));
+              props.tx(props.writeContracts.POC_V3_collection.setVoucher(newVoucher));
             }}
           >
             Set Purpose
@@ -184,7 +184,7 @@ function Subgraph(props) {
         </div>
 
         {data ? (
-          <Table dataSource={data.purposes} columns={purposeColumns} rowKey="id" />
+          <Table dataSource={data.vouchers} columns={voucherCoulums} rowKey="id" />
         ) : (
           <Typography>{loading ? "Loading..." : deployWarning}</Typography>
         )}

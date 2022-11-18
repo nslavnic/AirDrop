@@ -156,8 +156,8 @@ export default function ExampleUI({
       */}
       <Events
         contracts={readContracts}
-        contractName="YourContract"
-        eventName="SetPurpose"
+        contractName="POC_V3_collection"
+        eventName="SetVoucher"
         localProvider={localProvider}
         mainnetProvider={mainnetProvider}
         startBlock={1}

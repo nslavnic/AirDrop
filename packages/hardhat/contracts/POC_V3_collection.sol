@@ -14,12 +14,24 @@ contract POC_V3_collection is ERC721, EIP712, ERC721URIStorage, AccessControl {
     string private constant SIGNATURE_VERSION = "1.0.0";
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
+
+    //Testing GraphQl
+    event SetVoucher(address sender, string voucher);
+
+    string public testvoucher = "Building Unstoppable Apps!!!";
+
+    function setVoucher(string memory newVoucher) public payable {
+        testvoucher = newVoucher;
+        console.log(msg.sender,"set purpose to",testvoucher);
+        emit SetVoucher(msg.sender, testvoucher);
+    }
+    
     struct NFTVoucher {
         address sc_address;
         address to;
         uint256 tokenId;
         string uri;
-}
+    }
 
     constructor() ERC721("POC V3 Collection", "PVC") EIP712(SIGNING_DOMAIN, SIGNATURE_VERSION){
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
