@@ -26,7 +26,7 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   });
 
   // Getting a previously deployed contract
-  const NFT_contract = await ethers.getContract("POC_V3_collection", deployer);
+  //const NFT_contract = await ethers.getContract("POC_V3_collection", deployer);
   
   /*  await YourContract.setPurpose("Hello");
   

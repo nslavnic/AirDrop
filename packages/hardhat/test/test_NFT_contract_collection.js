@@ -38,6 +38,7 @@ describe('ERC721LazyMintWith712SignatureChecker', function () {
         const to = String(this.accounts[2].address);
 
         const voucher = { sc_address, to, tokenId, uri }
+        console.log(voucher);
 
         console.log("contract address : ", this.registry.address);
         
