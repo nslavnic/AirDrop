@@ -15,9 +15,6 @@ async function ipfsClient() {
     host: "localhost",
     port: 5001,
     protocol: "http",
-    headers: {
-      authorization: "Bearer " + "12D3KooWFr65EUfC74oprLZ4EzQeqp4s9XPWn7Je9rtV8Sumc2Xx",
-    },
   });
   return ipfs;
 }
@@ -63,6 +60,7 @@ function Home({ yourLocalBalance, readContracts, signer, tx, writeContracts, loc
   const [to, setTo] = useState();
   const [signatures, setSignatures] = useState("");
   const [voucherSigner, setVoucherSigner] = useState("");
+  const [image, setImage] = useState("");
 
   return (
     <div>
@@ -174,9 +172,12 @@ function Home({ yourLocalBalance, readContracts, signer, tx, writeContracts, loc
             const result = await readContracts.POC_V3_collection.verify(voucher, voucherSigner, signatures);
             console.log("result", result);
 
-            // if (result) {
-
-            // }
+            if (result) {
+              const link = uri.replace("ipfs://", "https://ipfs.io/ipfs/");
+              let res = (await (await fetch(link)).json()).image;
+              const image = res.replace("ipfs://", "https://ipfs.io/ipfs/");
+              setImage(image);
+            }
           }}
         >
           Verify
@@ -199,8 +200,9 @@ function Home({ yourLocalBalance, readContracts, signer, tx, writeContracts, loc
           Claim
         </Button>
       </div>
-      <div style={{ border: "1px solid #cccccc", padding: 16, width: 400, margin: "auto", marginTop: 64 }}>
-        <img id="myImage" />
+      <div style={{ border: "1px solid #cccccc", padding: 16, width: 600, margin: "auto", marginTop: 64 }}>
+        {/* <a href={metadata}>IMAGE</a> */}
+        <img src={image}></img>
       </div>
     </div>
   );
