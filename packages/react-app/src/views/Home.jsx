@@ -3,7 +3,51 @@ import { Link } from "react-router-dom";
 import { Button, Card, Divider, Form, Input } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
 import { getRPCPollTime } from "../helpers";
+import { create } from "ipfs-http-client";
+
 const { ethers } = require("ethers");
+
+const { BufferList } = require("bl");
+// https://www.npmjs.com/package/ipfs-http-client
+
+async function ipfsClient() {
+  const ipfs = create({
+    host: "localhost",
+    port: 5001,
+    protocol: "http",
+    headers: {
+      authorization: "Bearer " + "12D3KooWFr65EUfC74oprLZ4EzQeqp4s9XPWn7Je9rtV8Sumc2Xx",
+    },
+  });
+  return ipfs;
+}
+
+async function getData(hash) {
+  let ipfs = await ipfsClient();
+
+  let asyncitr = ipfs.cat(hash);
+
+  for await (const itr of asyncitr) {
+    let data = Buffer.from(itr).toString();
+    console.log(data);
+  }
+}
+
+// helper function to "Get" from IPFS
+// you usually go content.toString() after this...
+// const getFromIPFS = async hashToGet => {
+//   for await (const file of ipfs.get(hashToGet)) {
+//     console.log(file.path);
+//     if (!file.content) continue;
+//     const content = new BufferList();
+//     for await (const chunk of file.content) {
+//       content.append(chunk);
+//     }
+//     console.log(content);
+//     return content;
+//   }
+// };
+
 /**
  * web3 props can be passed from '../App.jsx' into your local view component for use
  * @param {*} yourLocalBalance balance on current network
@@ -18,6 +62,7 @@ function Home({ yourLocalBalance, readContracts, signer, tx, writeContracts, loc
   const [tokenId, setTokenId] = useState();
   const [to, setTo] = useState();
   const [signatures, setSignatures] = useState("");
+  const [voucherSigner, setVoucherSigner] = useState("");
 
   return (
     <div>
@@ -54,6 +99,8 @@ function Home({ yourLocalBalance, readContracts, signer, tx, writeContracts, loc
             const chainId = await signer.getChainId();
 
             const voucher = { sc_address, to, tokenId, uri };
+            console.log(chainId);
+            console.log(voucher);
             const sign = await signer._signTypedData(
               // Domain
               {
@@ -76,6 +123,12 @@ function Home({ yourLocalBalance, readContracts, signer, tx, writeContracts, loc
             );
             //const result = await
             setSignatures(sign);
+
+            console.log(sign);
+
+            //const result = await fetch("https://ipfs.io/ipfs/QmYEaHmR3U8ADASGzsGdvh3vW7ZUWU1URPCXYCXV8wnaQ9")
+
+            //console.log("Json in the ipfs : " + JSON.stringify(result));
           }}
         >
           Sign
@@ -91,16 +144,22 @@ function Home({ yourLocalBalance, readContracts, signer, tx, writeContracts, loc
             setSignatures(e.target.value);
           }}
         />
-        <label>Metadata URI</label>
+        <label>Signer</label>
         <Input
           onChange={e => {
-            setUri(e.target.value);
+            setVoucherSigner(e.target.value);
           }}
         />
         <label>Token Id</label>
         <Input
           onChange={e => {
             setTokenId(e.target.value);
+          }}
+        />
+        <label>Metadata URI</label>
+        <Input
+          onChange={e => {
+            setUri(e.target.value);
           }}
         />
 
@@ -111,13 +170,13 @@ function Home({ yourLocalBalance, readContracts, signer, tx, writeContracts, loc
             const to = await signer.getAddress();
             const address = await readContracts.POC_V3_collection.address;
             const voucher = [address, to, tokenId, uri];
-            console.log(voucher, to, signatures);
-            const result = await readContracts.POC_V3_collection.verify(voucher, to, signatures);
+            console.log(voucher, voucherSigner, signatures);
+            const result = await readContracts.POC_V3_collection.verify(voucher, voucherSigner, signatures);
             console.log("result", result);
-            if (result) {
-            }
-            //const purpose = useContractReader(readContracts, "POC_V3_collection", "verify", [voucher, to, signatures], localProviderPollingTime);
-            //0xbb67156b2c1bc5932483b8ae0405c55378347fb64f050a82f89e4b60ab68fab95dd143069798ed094674504b70bf1c456b863be47ebe87d628179b1cc3f26f7a1c
+
+            // if (result) {
+
+            // }
           }}
         >
           Verify
@@ -132,13 +191,16 @@ function Home({ yourLocalBalance, readContracts, signer, tx, writeContracts, loc
 
             const address = await readContracts.POC_V3_collection.address;
             const voucher = [address, to, tokenId, uri];
-            console.log(voucher, to, signatures);
-            const result = await writeContracts.POC_V3_collection.redeem(voucher, to, signatures);
+            console.log(voucher, voucherSigner, signatures);
+            const result = await writeContracts.POC_V3_collection.redeem(voucher, voucherSigner, signatures);
             console.log("result", result);
           }}
         >
           Claim
         </Button>
+      </div>
+      <div style={{ border: "1px solid #cccccc", padding: 16, width: 400, margin: "auto", marginTop: 64 }}>
+        <img id="myImage" />
       </div>
     </div>
   );
