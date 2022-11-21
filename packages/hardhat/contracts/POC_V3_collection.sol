@@ -62,7 +62,7 @@ contract POC_V3_collection is ERC721, EIP712, ERC721URIStorage, AccessControl {
 
     function redeem(NFTVoucher calldata voucher, address signer, bytes calldata signature)
     external {
-        require(_verify(voucher, signer, signature), "Invalid signature");
+        require(verify(voucher, signer, signature), "Invalid signature");
         require(hasRole(MINTER_ROLE, signer), "Signer not minter");
         require(voucher.sc_address == address(this), "Invalid smart contract");
         _safeMint(voucher.to, voucher.tokenId);
@@ -80,8 +80,8 @@ contract POC_V3_collection is ERC721, EIP712, ERC721URIStorage, AccessControl {
     )));
   }
 
-    function _verify(NFTVoucher calldata voucher, address signer, bytes calldata signature)
-    internal view returns (bool)
+    function verify(NFTVoucher calldata voucher, address signer, bytes calldata signature)
+    public view returns (bool)
     {
         bytes32 digest = _hash(voucher);
         return (SignatureChecker.isValidSignatureNow(signer, digest, signature));
