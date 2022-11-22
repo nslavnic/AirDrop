@@ -60,7 +60,7 @@ function Home({ yourLocalBalance, readContracts, signer, tx, writeContracts, loc
   const [to, setTo] = useState();
   const [signatures, setSignatures] = useState("");
   const [voucherSigner, setVoucherSigner] = useState("");
-  const [image, setImage] = useState("");
+  const [imageRender, setImageRender] = useState();
 
   return (
     <div>
@@ -170,13 +170,18 @@ function Home({ yourLocalBalance, readContracts, signer, tx, writeContracts, loc
             const voucher = [address, to, tokenId, uri];
             console.log(voucher, voucherSigner, signatures);
             const result = await readContracts.POC_V3_collection.verify(voucher, voucherSigner, signatures);
-            console.log("result", result);
+            const MINTER_ROLE = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MINTER_ROLE"));
+            console.log(MINTER_ROLE);
+            const minterRole = await readContracts.POC_V3_collection.hasRole(MINTER_ROLE, voucherSigner);
+            console.log("result", minterRole);
 
-            if (result) {
+            if (result && minterRole) {
               const link = uri.replace("ipfs://", "https://ipfs.io/ipfs/");
               let res = (await (await fetch(link)).json()).image;
-              const image = res.replace("ipfs://", "https://ipfs.io/ipfs/");
-              setImage(image);
+              const Createimage = res.replace("ipfs://", "https://ipfs.io/ipfs/");
+              setImageRender(<img src={Createimage}></img>);
+            } else {
+              setImageRender(<h1>ERROR : Verification failed</h1>);
             }
           }}
         >
@@ -202,7 +207,7 @@ function Home({ yourLocalBalance, readContracts, signer, tx, writeContracts, loc
       </div>
       <div style={{ border: "1px solid #cccccc", padding: 16, width: 600, margin: "auto", marginTop: 64 }}>
         {/* <a href={metadata}>IMAGE</a> */}
-        <img src={image}></img>
+        {imageRender}
       </div>
     </div>
   );
