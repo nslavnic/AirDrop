@@ -86,4 +86,5 @@ contract POC_V3_collection is ERC721, EIP712, ERC721URIStorage, AccessControl {
         bytes32 digest = _hash(voucher);
         return (SignatureChecker.isValidSignatureNow(signer, digest, signature));
     }
+    
 }
