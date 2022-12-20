@@ -3,7 +3,7 @@ pragma solidity >=0.8;
 import "@openzeppelin/contracts/proxy/Clones.sol";
 import "./ERC1155Sample.sol";
 
-contract FactoryNFT {
+contract Factory1155 {
     address owner;
     address immutable tokenImplementation;
     address[] public clones;
@@ -16,6 +16,10 @@ contract FactoryNFT {
     constructor() {
         tokenImplementation = address(new ERC1155Sample());
         owner = msg.sender;
+    }
+
+    function getTokenImpl() public view returns (address) {
+        return tokenImplementation;
     }
 
     function createCollectionERC1155(string calldata _name, string calldata _symbol, string calldata _tokenMetadataURI, address _collectionOwnerAddress, address _minterAddress) external onlyOwner returns (address) {

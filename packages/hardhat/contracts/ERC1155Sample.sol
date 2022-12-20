@@ -28,7 +28,7 @@ contract ERC1155Sample is Initializable, ERC1155Upgradeable, EIP712Upgradeable, 
 
     /// @dev metadata info
     string public contractURI;
-
+// https://etherscan.io/address/0x6b4020ed97c3c7bd69ac7aac49f780574e905508#code
     address public collectionOwnerAddress;
     address public minterAddress;
 
@@ -58,25 +58,21 @@ contract ERC1155Sample is Initializable, ERC1155Upgradeable, EIP712Upgradeable, 
         _grantRole(OWNER_ROLE, _collectionOwnerAddress);
         _grantRole(MINTER_ROLE, _minterAddress);
 
-
-
-
-
         //set addresses
         collectionOwnerAddress = _collectionOwnerAddress;
         minterAddress = _minterAddress;
 
         name = _name;
         symbol = _symbol;
-        // format : "https://ipfs.io/ipfs/bafybeihjjkwdrxxjnuwevlqtqmh3iegcadc32sio4wmo7bv2gbf34qs34a/{id}.json"
+        // format : "https://ipfs.io/ipfs/QmaeZy3rgdecYhY3TBVc2ChRd76R26ux11M8G9Pn8bmjih/{id}.json"
         _setURI(_tokenMetadataURI);
         tokenMetadataURI = _tokenMetadataURI;
     }
 
-    function uri(uint256 _tokenid) override public view returns (string memory) {
+    function TokenUri(uint256 _tokenid) public view returns (string memory) {
         return string(
             abi.encodePacked(
-                tokenMetadataURI,
+                uri(_tokenid),
                 Strings.toString(_tokenid),".json"
             )
         );
