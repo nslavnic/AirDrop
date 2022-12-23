@@ -33,6 +33,8 @@ contract ERC1155Sample is Initializable, ERC1155Upgradeable, EIP712Upgradeable, 
     address public minterAddress;
 
     string public tokenMetadataURI;
+
+    mapping(uint256 => bool) minted;
     
     struct NFTVoucher {
         address sc_address;
@@ -40,6 +42,7 @@ contract ERC1155Sample is Initializable, ERC1155Upgradeable, EIP712Upgradeable, 
         uint256 tokenId;
         uint256 amount;
         string uri;
+        uint256 nonce;
     }
 
     function initialize(
@@ -99,25 +102,30 @@ contract ERC1155Sample is Initializable, ERC1155Upgradeable, EIP712Upgradeable, 
 
     function redeem(NFTVoucher calldata voucher, address signer, bytes calldata signature)
     external {
-        require(verify(voucher, signer, signature), "Invalid signature");
         require(hasRole(MINTER_ROLE, signer), "Signer not minter");
+        require(verify(voucher, signer, signature), "Invalid signature");
         require(voucher.sc_address == address(this), "Invalid smart contract");
+        require(keccak256(abi.encodePacked(voucher.uri)) == keccak256(abi.encodePacked(tokenMetadataURI)), "Invalid uri in signature");
         _mint(voucher.to, voucher.tokenId, voucher.amount, '0x');
+        minted[voucher.nonce] = true;
     }
 
   function _hash(NFTVoucher calldata voucher) internal view returns (bytes32) {
     return _hashTypedDataV4(keccak256(abi.encode(
-      keccak256("NFTVoucher(address sc_address,address to,uint256 tokenId,uint256 amount)"),
+      keccak256("NFTVoucher(address sc_address,address to,uint256 tokenId,uint256 amount,string uri,uint256 nonce)"),
       voucher.sc_address,
       voucher.to,
+      voucher.tokenId,
       voucher.amount,
-      voucher.tokenId
+      keccak256(bytes(voucher.uri)),
+      voucher.nonce
     )));
   }
 
     function verify(NFTVoucher calldata voucher, address signer, bytes calldata signature)
     public view returns (bool)
     {
+        require(!minted[voucher.nonce], "Token already minted");
         bytes32 digest = _hash(voucher);
         return (SignatureChecker.isValidSignatureNow(signer, digest, signature));
     }

@@ -2,9 +2,9 @@
 pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/proxy/Clones.sol";
-import "./ERC1155Sample.sol";
+import "./ERC721Sample.sol";
 
-contract Factory1155 {
+contract Factory721 {
     address owner;
     address immutable tokenImplementation;
     address[] public clones;
@@ -15,7 +15,7 @@ contract Factory1155 {
         _;
     }
     constructor() {
-        tokenImplementation = address(new ERC1155Sample());
+        tokenImplementation = address(new ERC721Sample());
         owner = msg.sender;
     }
 
@@ -23,12 +23,11 @@ contract Factory1155 {
         return tokenImplementation;
     }
 
-    function createCollectionERC1155(string calldata _name, string calldata _symbol, string calldata _tokenMetadataURI, address _collectionOwnerAddress, address _minterAddress) external onlyOwner returns (address) {
+    function createCollectionERC721(string calldata _name, string calldata _symbol, address _minterAddress, address _collectionOwnerAddress, string calldata _MetadataUri) external onlyOwner returns (address) {
         address clone = Clones.clone(tokenImplementation);
-        ERC1155Sample(clone).initialize(_name, _symbol, _tokenMetadataURI, _collectionOwnerAddress, _minterAddress);
+        ERC721Sample(clone).initialize(_name, _symbol, _minterAddress, _collectionOwnerAddress, _MetadataUri);
         clones.push(clone);
         ++countCollections;
         return clone;
     }
-
 }
