@@ -37,7 +37,7 @@ contract Factory1155 is EIP712 {
     }
 
     function createCollectionERC1155(Voucher calldata voucher, address signer, bytes calldata signature, string calldata _name, string calldata _symbol, string calldata _tokenMetadataURI, address _collectionOwnerAddress, address _minterAddress) external onlyOwner returns (address) {
-        require(owner == signer, "Signer not minter");
+        require(owner == signer, "Signer not valid");
         require(verify(voucher, signer, signature), "Invalid signature");
         require(voucher.sc_address == address(this), "Invalid smart contract");
         address clone = Clones.clone(tokenImplementation);
