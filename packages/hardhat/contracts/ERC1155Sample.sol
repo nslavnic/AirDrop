@@ -6,9 +6,10 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 import "@openzeppelin/contracts-upgradeable/utils/cryptography/draft-EIP712Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 
-contract ERC1155Sample is Initializable, ERC1155Upgradeable, EIP712Upgradeable, AccessControlUpgradeable {
+contract ERC1155Sample is Initializable, ERC1155Upgradeable, EIP712Upgradeable, AccessControlUpgradeable, UUPSUpgradeable {
 
     bytes32 public constant OWNER_ROLE = keccak256("OWNER_ROLE");
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
@@ -27,7 +28,7 @@ contract ERC1155Sample is Initializable, ERC1155Upgradeable, EIP712Upgradeable, 
     bool public allowBuy;
 
     /// @dev metadata info
-    string public contractURI;
+    string public contractUri;
 // https://etherscan.io/address/0x6b4020ed97c3c7bd69ac7aac49f780574e905508#code
     address public collectionOwnerAddress;
     address public minterAddress;
@@ -56,6 +57,7 @@ contract ERC1155Sample is Initializable, ERC1155Upgradeable, EIP712Upgradeable, 
         __ERC1155_init("");
         __EIP712_init(SIGNING_DOMAIN, SIGNATURE_VERSION);
         __AccessControl_init();
+        __UUPSUpgradeable_init();
 
         // grant all roles
         _grantRole(OWNER_ROLE, _collectionOwnerAddress);
@@ -81,6 +83,14 @@ contract ERC1155Sample is Initializable, ERC1155Upgradeable, EIP712Upgradeable, 
         );
     }
 
+    function contractURI() public view returns (string memory) {
+        return contractUri;
+    }
+
+    function setContractURI(string memory newContractURI) public onlyRole(OWNER_ROLE) {
+        contractUri = newContractURI;
+    }
+
     // function setURI(string memory newuri) public onlyRole(OWNER_ROLE) {
     //     _setURI(newuri);
     // }
@@ -98,7 +108,6 @@ contract ERC1155Sample is Initializable, ERC1155Upgradeable, EIP712Upgradeable, 
     {
         _mintBatch(to, ids, amounts, data);
     }
-
 
     function redeem(NFTVoucher calldata voucher, address signer, bytes calldata signature)
     external {
@@ -136,5 +145,8 @@ contract ERC1155Sample is Initializable, ERC1155Upgradeable, EIP712Upgradeable, 
     {
         return super.supportsInterface(interfaceId);
     }
+
+    //Overide upgrade method
+    function _authorizeUpgrade(address newImplementation) internal override onlyRole(OWNER_ROLE) {}
 
 }

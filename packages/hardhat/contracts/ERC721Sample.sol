@@ -20,6 +20,9 @@ contract ERC721Sample is Initializable, ERC721Upgradeable, EIP712Upgradeable, ER
     address public minterAddress;
 
     string public MetadataUri;
+    
+    /// @dev metadata info
+    string public contractUri;
 
     struct NFTVoucher {
         address sc_address;
@@ -89,6 +92,14 @@ contract ERC721Sample is Initializable, ERC721Upgradeable, EIP712Upgradeable, ER
     {
         bytes32 digest = _hash(voucher);
         return (SignatureChecker.isValidSignatureNow(signer, digest, signature));
+    }
+
+    function contractURI() public view returns (string memory) {
+        return contractUri;
+    }
+
+    function setContractURI(string memory newContractURI) public onlyRole(OWNER_ROLE) {
+        contractUri = newContractURI;
     }
     
 }

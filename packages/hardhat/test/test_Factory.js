@@ -26,7 +26,7 @@ describe('FactoryTests', function () {
 
           const instance = this.erc1155.attach(address);
 
-          console.log(address);
+          console.log('clone address : ' + address);
 
           /*
         address sc_address;
@@ -75,9 +75,7 @@ describe('FactoryTests', function () {
           await expect(instance.connect(this.accounts[2]).redeem(voucher, this.accounts[1].address, signature)).to.be.revertedWith("Token already minted");
           //await expect(await instance.ownerOf(1)).to.equal(this.accounts[2].address);
 
-          // ERROR : UN UTILISATEUR PEUT MINT 1 SEUL FOIS AVEC UN VOUCHER !!!!!!!!!!
       })
-
     })
   
     describe("Create collection ERC721", function () {
@@ -143,4 +141,5 @@ describe('FactoryTests', function () {
       })
 
     })
+
   });
